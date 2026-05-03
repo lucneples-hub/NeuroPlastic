@@ -37,9 +37,9 @@ const rowY=r=>(r-0.5)*ZH,colX=c=>c*ZW+ZW/2;
 const HELP_BTN={x:W-28,y:22,r:14};
 const PLAY_BTN={x:W/2,y:4.5*ZH,w:160,h:50};
 const Z10={
-  minus:{x:8,y:9*ZH+50,w:28,h:22},
-  plus:{x:W-36,y:9*ZH+50,w:28,h:22},
-  raz:{x:W/2+20,y:9*ZH+50,w:50,h:22}
+  minus:{x:8,y:9*ZH+44,w:24,h:18},
+  plus:{x:W-32,y:9*ZH+44,w:24,h:18},
+  raz:{x:W-82,y:9*ZH+44,w:42,h:18}
 };
 
 let gameMode='libre';
@@ -225,17 +225,30 @@ function drawZone10(){
   const sy=9*ZH;
   ctx.fillStyle='#F1EFE8';ctx.fillRect(0,sy,W,ZH);ctx.strokeStyle='rgba(0,0,0,0.1)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,sy);ctx.lineTo(W,sy);ctx.stroke();
   const avg=dropped>0?(pts/dropped).toFixed(2):'0.00';
-  ctx.fillStyle=C.text;ctx.font='bold 15px "Courier New"';ctx.textAlign='center';ctx.fillText('Points: '+pts+'  ·  Billes: '+dropped,W/2,sy+20);
+  // Ligne 1 : Points + Billes
+  ctx.fillStyle=C.text;ctx.font='bold 13px "Courier New"';ctx.textAlign='center';
+  ctx.fillText('Points: '+pts+'  ·  Billes: '+dropped,W/2,sy+16);
+  // Ligne 2 : Moyenne + record
   const best=bestScore();
-  ctx.fillStyle=C.red;ctx.font='bold 18px "Courier New"';ctx.textAlign='center';ctx.fillText('Moyenne: '+avg+(best>0?'  ★'+best.toFixed(2):''),W/2,sy+40);
+  ctx.fillStyle=C.red;ctx.font='bold 16px "Courier New"';ctx.textAlign='center';
+  ctx.fillText('Moyenne: '+avg+(best>0?'  ★'+best.toFixed(2):''),W/2,sy+34);
+  // Ligne 3 : − vitesse + RAZ (compacte)
   const{minus,plus,raz}=Z10;
-  ctx.fillStyle='rgba(0,0,0,0.08)';ctx.beginPath();ctx.roundRect(minus.x,minus.y,minus.w,minus.h,4);ctx.fill();
-  ctx.fillStyle=speed>SPEED_MIN?C.text:C.muted;ctx.font='bold 16px "Courier New"';ctx.textAlign='center';ctx.fillText('−',minus.x+minus.w/2,minus.y+minus.h-4);
-  ctx.fillStyle=C.teal;ctx.font='bold 13px "Courier New"';ctx.textAlign='center';ctx.fillText('⚡'+speed+'x',W/2-22,raz.y+raz.h-4);
-  ctx.fillStyle='rgba(0,0,0,0.08)';ctx.beginPath();ctx.roundRect(plus.x,plus.y,plus.w,plus.h,4);ctx.fill();
-  ctx.fillStyle=speed<SPEED_MAX?C.text:C.muted;ctx.font='bold 16px "Courier New"';ctx.textAlign='center';ctx.fillText('+',plus.x+plus.w/2,plus.y+plus.h-4);
-  ctx.fillStyle=C.razRed;ctx.beginPath();ctx.roundRect(raz.x,raz.y,raz.w,raz.h,4);ctx.fill();
-  ctx.fillStyle='#fff';ctx.font='bold 11px "Courier New"';ctx.textAlign='center';ctx.fillText('RAZ',raz.x+raz.w/2,raz.y+raz.h-4);
+  // Bouton −
+  ctx.fillStyle='rgba(0,0,0,0.10)';ctx.beginPath();ctx.roundRect(minus.x,minus.y,minus.w,minus.h,3);ctx.fill();
+  ctx.fillStyle=speed>SPEED_MIN?C.text:C.muted;ctx.font='bold 14px "Courier New"';ctx.textAlign='center';
+  ctx.fillText('−',minus.x+minus.w/2,minus.y+13);
+  // Vitesse
+  ctx.fillStyle=C.teal;ctx.font='bold 12px "Courier New"';ctx.textAlign='left';
+  ctx.fillText('⚡ '+speed+'x',minus.x+minus.w+6,minus.y+13);
+  // Bouton +
+  ctx.fillStyle='rgba(0,0,0,0.10)';ctx.beginPath();ctx.roundRect(plus.x,plus.y,plus.w,plus.h,3);ctx.fill();
+  ctx.fillStyle=speed<SPEED_MAX?C.text:C.muted;ctx.font='bold 14px "Courier New"';ctx.textAlign='center';
+  ctx.fillText('+',plus.x+plus.w/2,plus.y+13);
+  // Bouton RAZ
+  ctx.fillStyle=C.razRed;ctx.beginPath();ctx.roundRect(raz.x,raz.y,raz.w,raz.h,3);ctx.fill();
+  ctx.fillStyle='#fff';ctx.font='bold 11px "Courier New"';ctx.textAlign='center';
+  ctx.fillText('RAZ',raz.x+raz.w/2,raz.y+13);
 }
 function drawControls(){
   ctx.fillStyle='#E8E6DF';ctx.fillRect(0,GAME_H,W,CTRL_H);ctx.strokeStyle='rgba(0,0,0,0.07)';ctx.lineWidth=1;
