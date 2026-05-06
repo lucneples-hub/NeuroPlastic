@@ -31,7 +31,7 @@ const ZONE_COLORS={
   9:{fill:'rgba(190,30,30,0.45)',border:'rgba(150,20,20,0.7)',label:'#7a1010'}
 };
 const BASKET_ROWS=[5,7,9],PTS={5:8,7:4,9:2},TRAIN_TOTAL=10;
-const SPEED_MIN=4,SPEED_MAX=14,SPEED_STEP=2;
+const SPEED_MIN=4,SPEED_MAX=14,SPEED_STEP=1;
 const DEFI_DURATION=120;
 const rowY=r=>(r-0.5)*ZH,colX=c=>c*ZW+ZW/2;
 const HELP_BTN={x:W-28,y:22,r:14};
@@ -60,6 +60,8 @@ let reactionTimes=[],ballSpawnTime=0;
 let comboCount=0,comboDisplay=null;
 let particles=[];
 let defiTimeLeft=DEFI_DURATION,defiInterval=null,defiRunning=false;
+// Vitesse adaptative
+let consecutiveHits=0,consecutiveMisses=0;
 
 function resetBasketCol(){basket.col=1;moved=false;}
 
@@ -84,7 +86,7 @@ function changeSpeed(delta){speed=Math.max(SPEED_MIN,Math.min(SPEED_MAX,speed+de
 function doRAZ(){
   pts=0;dropped=0;comboCount=0;comboDisplay=null;particles=[];
   stats={green:{ok:0,miss:0},red:{ok:0,miss:0}};
-  reactionTimes=[];basket.row=5;resetBasketCol();
+  reactionTimes=[];basket.row=5;resetBasketCol();consecutiveHits=0;consecutiveMisses=0;
   if(gameMode==='defi'){defiTimeLeft=DEFI_DURATION;stopDefiTimer();}
   if(!waiting&&!ball){waiting=true;setTimeout(spawnBall,600);}
 }
@@ -125,10 +127,36 @@ function resolveBall(caught){
     comboCount++;
     if(comboCount>=3)comboDisplay={count:comboCount,timer:80,x:bx,y:by-40};
     fb={txt:'+'+p+'pt ↑'+(comboCount>=3?' 🔥x'+comboCount:''),color:C.green,bg:C.catchBg,timer:70};
+    // Vitesse adaptative : 5 réussites consécutives → +1
+    if(!training){
+      consecutiveMisses=0;
+      consecutiveHits++;
+      if(consecutiveHits>=5){
+        consecutiveHits=0;
+        const avg=dropped>0?pts/dropped:0;
+        const canIncrease=speed<7||(avg>5);
+        if(canIncrease&&speed<SPEED_MAX){
+          speed=Math.min(SPEED_MAX,speed+1);
+          speedNotif={txt:'↑ vitesse '+speed+'x',timer:70};
+        }
+      }
+    }
   } else {
     stats[color].miss++;comboCount=0;comboDisplay=null;
     if(idx<BASKET_ROWS.length-1)basket.row=BASKET_ROWS[idx+1];
     fb={txt:'Raté ↓',color:C.red,bg:C.missBg,timer:70};
+    // Vitesse adaptative : 5 ratés consécutifs → -1
+    if(!training){
+      consecutiveHits=0;
+      consecutiveMisses++;
+      if(consecutiveMisses>=5){
+        consecutiveMisses=0;
+        if(speed>SPEED_MIN){
+          speed=Math.max(SPEED_MIN,speed-1);
+          speedNotif={txt:'↓ vitesse '+speed+'x',timer:70};
+        }
+      }
+    }
   }
   ball=null;waiting=true;resetBasketCol();endTurn();
 }
@@ -361,7 +389,7 @@ function drawBilan(){
 function dismissBilan(){
   showBilan=false;paused=false;pts=0;dropped=0;comboCount=0;comboDisplay=null;particles=[];
   stats={green:{ok:0,miss:0},red:{ok:0,miss:0}};
-  reactionTimes=[];basket.row=5;resetBasketCol();
+  reactionTimes=[];basket.row=5;resetBasketCol();consecutiveHits=0;consecutiveMisses=0;
   if(gameMode==='defi'){defiTimeLeft=DEFI_DURATION;stopDefiTimer();}
   setTimeout(spawnBall,600);
 }
