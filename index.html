@@ -125,7 +125,7 @@ function resolveBall(caught){
     spawnParticles(bx,by,color==='green'?C.greenLight:C.redLight);
     comboCount++;
     if(comboCount>=3)comboDisplay={count:comboCount,timer:80,x:bx,y:by-40};
-    fb={txt:'+'+p+'pt ↑'+(comboCount>=3?' 🔥x'+comboCount:''),color:C.green,bg:C.catchBg,timer:70};
+    fb={txt:'+'+p+' pts'+(comboCount>=3?' 🔥x'+comboCount:''),color:C.green,bg:C.catchBg,timer:60};
     // Vitesse adaptative : 5 réussites consécutives → +1
     consecutiveMisses=0;
     consecutiveHits++;
@@ -141,7 +141,7 @@ function resolveBall(caught){
   } else {
     stats[color].miss++;comboCount=0;comboDisplay=null;
     if(idx<BASKET_ROWS.length-1)basket.row=BASKET_ROWS[idx+1];
-    fb={txt:'Raté ↓',color:C.red,bg:C.missBg,timer:70};
+    fb=null;
     // Vitesse adaptative : 5 ratés consécutifs → -1 (toujours actif)
     consecutiveHits=0;
     consecutiveMisses++;
