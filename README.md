@@ -11,8 +11,8 @@ Si la bille est verte il faut appuyer sur la fleche droite pour déplacer le pan
 
 Si la bille est rouge il faut appuyer sur la fleche droite pour que le panier parte à gauche et sur la fleche gauche pour que le panier parte à droite (à l’inverse de la normale).
 
-Si on n’a pas rattrapé la bille on marque 0 points et le panier descend 2 zones plus bas en zone 5/10 s’il était en 3/10 ou en 7/10 s’il était en zone 5/10
+Si on n’a pas rattrapé la bille on marque 0 points et le panier descend plus bas 
 
-Si on a rattrapé la bille en zone 3/10 on marque 8 points / 4 points en zone 5/10 et 2 points si le panier est dans la zone 7/10
+Si on a rattrapé la bille en zone haute on marque 10 points / 5 points en zone du milieu et 2 points si le panier est dans la zone basse.
 
-Le score (nombre de points divisé par nombre de billes tombées) s’affiche en permanence  dans la zone 10/10
+Le score (nombre de points divisé par nombre de billes tombées) s’affiche en permanence et en % dans la zone 10/10
