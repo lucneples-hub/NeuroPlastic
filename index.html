@@ -30,7 +30,7 @@ const ZONE_COLORS={
   7:{fill:'rgba(230,90,15,0.50)',border:'rgba(180,60,0,0.7)',label:'#6a1e00'},
   9:{fill:'rgba(190,30,30,0.45)',border:'rgba(150,20,20,0.7)',label:'#7a1010'}
 };
-const BASKET_ROWS=[5,7,9],PTS={5:8,7:4,9:2},TRAIN_TOTAL=10;
+const BASKET_ROWS=[5,7,9],PTS={5:10,7:5,9:2},TRAIN_TOTAL=10;
 const SPEED_MIN=4,SPEED_MAX=14,SPEED_STEP=1;
 const DEFI_DURATION=120;
 const rowY=r=>(r-0.5)*ZH,colX=c=>c*ZW+ZW/2;
@@ -248,14 +248,16 @@ function drawPauseScreen(){
 function drawZone10(){
   const sy=9*ZH;
   ctx.fillStyle='#F1EFE8';ctx.fillRect(0,sy,W,ZH);ctx.strokeStyle='rgba(0,0,0,0.1)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,sy);ctx.lineTo(W,sy);ctx.stroke();
-  const avg=dropped>0?(pts/dropped).toFixed(2):'0.00';
+  const avg=dropped>0?pts/dropped:0;
+  const pct=Math.round(avg*10);
   // Ligne 1 : Points + Billes
   ctx.fillStyle=C.text;ctx.font='bold 13px "Courier New"';ctx.textAlign='center';
   ctx.fillText('Points: '+pts+'  ·  Billes: '+dropped,W/2,sy+16);
-  // Ligne 2 : Moyenne + record
+  // Ligne 2 : Score % + record
   const best=bestScore();
+  const bestPct=Math.round(best*10);
   ctx.fillStyle=C.red;ctx.font='bold 16px "Courier New"';ctx.textAlign='center';
-  ctx.fillText('Moyenne: '+avg+(best>0?'  ★'+best.toFixed(2):''),W/2,sy+34);
+  ctx.fillText('Score: '+pct+'%'+(bestPct>0?'  ★ '+bestPct+'%':''),W/2,sy+34);
   // Ligne 3 : − vitesse + RAZ (compacte)
   const{minus,plus,raz}=Z10;
   // Bouton −
@@ -335,7 +337,7 @@ function drawCourbe(mx,my,mw,mh){
   ctx.beginPath();ctx.moveTo(toX(0),toY(vals[0]));vals.forEach((v,i)=>{if(i>0)ctx.lineTo(toX(i),toY(v));});ctx.lineTo(toX(vals.length-1),gy+gh);ctx.lineTo(toX(0),gy+gh);ctx.closePath();ctx.fillStyle=C.teal+'22';ctx.fill();
   ctx.strokeStyle=C.teal;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(toX(0),toY(vals[0]));vals.forEach((v,i)=>{if(i>0)ctx.lineTo(toX(i),toY(v));});ctx.stroke();
   vals.forEach((v,i)=>{const isLast=i===vals.length-1,isRec=v===best;ctx.beginPath();ctx.arc(toX(i),toY(v),isLast?5:3,0,Math.PI*2);ctx.fillStyle=isRec?C.gold:isLast?C.teal:'#fff';ctx.fill();ctx.strokeStyle=isRec?C.gold:C.teal;ctx.lineWidth=1.5;ctx.stroke();});
-  const last=vals[vals.length-1];ctx.fillStyle=C.teal;ctx.font='bold 10px "Courier New"';ctx.textAlign='center';ctx.fillText(last.toFixed(2),toX(vals.length-1),toY(last)-8);
+  const last=vals[vals.length-1];ctx.fillStyle=C.teal;ctx.font='bold 10px "Courier New"';ctx.textAlign='center';ctx.fillText(Math.round(last*10)+'%',toX(vals.length-1),toY(last)-8);
   ctx.fillStyle=C.muted;ctx.font='9px "Courier New"';ctx.textAlign='center';ctx.fillText('1',toX(0),gy+gh+14);ctx.fillText(''+data.length,toX(data.length-1),gy+gh+14);
   ctx.fillStyle=C.gold;ctx.font='9px "Courier New"';ctx.textAlign='left';ctx.fillText('★ record',gx+4,recY-3);
 }
@@ -367,8 +369,8 @@ function drawBilan(){
   ctx.fillStyle=bilanIsRecord?C.goldLight:'#fff';ctx.fillRect(mx,my,mw,mh);ctx.strokeStyle=bilanIsRecord?C.gold:C.teal;ctx.lineWidth=2;ctx.strokeRect(mx,my,mw,mh);
   ctx.textAlign='center';ctx.fillStyle=bilanIsRecord?C.gold:C.teal;ctx.font='bold 11px "Courier New"';
   ctx.fillText((gameMode==='defi'?'⏱ DÉFI 2min':'📊 LIBRE')+' · '+speed+'x · '+(sessionHistory[sessionHistory.length-1]?.date||''),W/2,my+16);
-  ctx.fillStyle=C.red;ctx.font='bold 22px "Courier New"';ctx.fillText('Moyenne: '+bilanAvg.toFixed(2)+(bilanIsRecord?' ★':''),W/2,my+42);
-  if(!bilanIsRecord){const best=bestScore();ctx.fillStyle=C.muted;ctx.font='10px "Courier New"';ctx.fillText('Record : '+best.toFixed(2),W/2,my+58);}
+  ctx.fillStyle=C.red;ctx.font='bold 22px "Courier New"';ctx.fillText('Score: '+Math.round(bilanAvg*10)+'%'+(bilanIsRecord?' ★':''),W/2,my+42);
+  if(!bilanIsRecord){const best=bestScore();ctx.fillStyle=C.muted;ctx.font='10px "Courier New"';ctx.fillText('Record : '+Math.round(best*10)+'%',W/2,my+58);}
   const tabY=my+(bilanIsRecord?52:66);
   [{id:'courbe',label:'📈 Progression'},{id:'stats',label:'📊 Détail & Réaction'}].forEach((t,i)=>{
     const tx=mx+6+i*(mw/2-4),tw=mw/2-8,th=24;
